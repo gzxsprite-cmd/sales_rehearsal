@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>销售对练演示</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">销售对练 AI</p>
+          <h1>销售对练演示版</h1>
+        </div>
+        <button id="restartTopBtn" class="btn ghost hidden">新建对练</button>
+      </header>
+
+      <section id="startView" class="view active card">
+        <h2>开始前快速设置</h2>
+        <p class="subtle">会前 1 分钟，先确认客户、产品和沟通目标。</p>
+
+        <div class="grid-two">
+          <label class="field">
+            <span>客户</span>
+            <select id="customerSelect"></select>
+          </label>
+          <article class="field background-box">
+            <span>客户背景</span>
+            <p id="customerBackground" class="background-text"></p>
+          </article>
+        </div>
+
+        <article class="field">
+          <span>未来主推车型（可多选）</span>
+          <div id="modelOptions" class="model-grid"></div>
+        </article>
+
+        <div class="grid-three">
+          <label class="field">
+            <span>沟通对象角色</span>
+            <select id="roleSelect"></select>
+          </label>
+          <label class="field">
+            <span>主推产品</span>
+            <select id="productSelect"></select>
+          </label>
+          <label class="field">
+            <span>沟通场景</span>
+            <select id="scenarioSelect"></select>
+          </label>
+        </div>
+
+        <label class="field time-field">
+          <span>时长限制</span>
+          <select id="timeSelect"></select>
+        </label>
+
+        <div class="actions-row">
+          <button id="startBtn" class="btn primary">开始对练</button>
+        </div>
+      </section>
+
+      <section id="chatView" class="view card">
+        <div class="chat-top">
+          <div>
+            <h2>模拟对话</h2>
+            <div id="chatContext" class="context-strip"></div>
+          </div>
+          <div class="timer" id="timerBadge">00:00</div>
+        </div>
+
+        <div id="chatLog" class="chat-log" aria-live="polite"></div>
+
+        <div class="composer">
+          <textarea id="chatInput" rows="3" placeholder="输入你想对客户说的话...（Ctrl/Cmd + Enter 发送）"></textarea>
+          <div class="actions-row">
+            <button id="endChatBtn" class="btn ghost">结束对话</button>
+            <button id="sendBtn" class="btn primary">发送</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="reviewView" class="view card">
+        <h2>复盘建议</h2>
+        <div id="outcomeBadge" class="outcome-badge"></div>
+
+        <div class="review-grid">
+          <article class="review-block">
+            <h3>做得好的地方</h3>
+            <ul id="goodPoints"></ul>
+          </article>
+          <article class="review-block">
+            <h3>没讲清楚的地方</h3>
+            <ul id="unclearPoints"></ul>
+          </article>
+          <article class="review-block">
+            <h3>客户可能担心的点</h3>
+            <ul id="riskPoints"></ul>
+          </article>
+        </div>
+
+        <article class="review-block coaching">
+          <h3>建议补充的知识</h3>
+          <p id="missingType"></p>
+          <p id="knowledgeToAdd"></p>
+          <p><strong>下轮可直接这样说：</strong></p>
+          <blockquote id="suggestedPhrase"></blockquote>
+          <p id="nextAction"></p>
+        </article>
+
+        <div class="actions-row">
+          <button id="retryBtn" class="btn primary">再练一轮</button>
+          <button id="newRunBtn" class="btn ghost">新建对练</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="mock-ai.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
