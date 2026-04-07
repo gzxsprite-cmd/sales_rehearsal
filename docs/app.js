@@ -5,7 +5,8 @@
     history: [],
     turnCount: 0,
     startedAt: null,
-    timer: null
+    timer: null,
+    activeRefKey: "productIntro"
   };
 
   const views = {
@@ -18,7 +19,7 @@
     restartTopBtn: document.getElementById("restartTopBtn"),
     customerSelect: document.getElementById("customerSelect"),
     customerBackground: document.getElementById("customerBackground"),
-    modelOptions: document.getElementById("modelOptions"),
+    modelList: document.getElementById("modelList"),
     roleSelect: document.getElementById("roleSelect"),
     productSelect: document.getElementById("productSelect"),
     scenarioSelect: document.getElementById("scenarioSelect"),
@@ -27,7 +28,10 @@
     chatLog: document.getElementById("chatLog"),
     chatInput: document.getElementById("chatInput"),
     timerBadge: document.getElementById("timerBadge"),
+    refTabs: document.getElementById("refTabs"),
+    refContent: document.getElementById("refContent"),
     outcomeBadge: document.getElementById("outcomeBadge"),
+    winRate: document.getElementById("winRate"),
     goodPoints: document.getElementById("goodPoints"),
     unclearPoints: document.getElementById("unclearPoints"),
     riskPoints: document.getElementById("riskPoints"),
@@ -41,8 +45,7 @@
     Object.values(views).forEach((view) => view.classList.remove("active"));
     views[step].classList.add("active");
     state.step = step;
-    const showTopRestart = step === "chat" || step === "review";
-    els.restartTopBtn.classList.toggle("hidden", !showTopRestart);
+    els.restartTopBtn.classList.toggle("hidden", !(step === "chat" || step === "review"));
   }
 
   function appendOptions(target, options, selectedIndex) {
@@ -52,42 +55,85 @@
       const label = typeof item === "string" ? item : item.name;
       option.value = value;
       option.textContent = label;
-      if (index === selectedIndex) option.selected = true;
+      option.selected = index === selectedIndex;
       target.append(option);
     });
   }
 
   function updateCustomerBackground() {
     const customer = DEMO_DATA.customers.find((c) => c.id === els.customerSelect.value);
-    els.customerBackground.textContent = customer ? customer.background : "";
+    els.customerBackground.textContent = customer ? `${customer.background} ${customer.projectNeed}` : "";
   }
 
-  function renderModelOptions() {
-    els.modelOptions.innerHTML = "";
+  function renderModelList() {
+    els.modelList.innerHTML = "";
 
     DEMO_DATA.futureModels.forEach((model, index) => {
-      const label = document.createElement("label");
-      label.className = "model-card";
+      const row = document.createElement("label");
+      row.className = "model-row";
 
+      const checkboxWrap = document.createElement("span");
       const input = document.createElement("input");
       input.type = "checkbox";
       input.value = model.id;
       if (index < 2) input.checked = true;
+      checkboxWrap.append(input);
 
-      const content = document.createElement("div");
-      const vehicle = DEMO_DATA.labels.vehicleType[model.vehicleType];
-      const energy = DEMO_DATA.labels.energyType[model.energyType];
-      const usage = DEMO_DATA.labels.usage[model.usage];
-      content.innerHTML = `<strong>${model.name}</strong><div class="model-meta">${vehicle}｜${energy}｜${usage}</div>`;
+      const name = document.createElement("span");
+      name.textContent = model.name;
 
-      input.addEventListener("change", () => {
-        label.classList.toggle("selected", input.checked);
-      });
+      const vType = document.createElement("span");
+      vType.innerHTML = `<span class="model-tag">${DEMO_DATA.labels.vehicleType[model.vehicleType]}</span>`;
 
-      label.classList.toggle("selected", input.checked);
-      label.append(input, content);
-      els.modelOptions.append(label);
+      const eType = document.createElement("span");
+      eType.innerHTML = `<span class="model-tag">${DEMO_DATA.labels.energyType[model.energyType]}</span>`;
+
+      const usage = document.createElement("span");
+      usage.innerHTML = `<span class="model-tag">${DEMO_DATA.labels.usage[model.usage]}</span>`;
+
+      input.addEventListener("change", () => row.classList.toggle("selected", input.checked));
+      row.classList.toggle("selected", input.checked);
+      row.append(checkboxWrap, name, vType, eType, usage);
+      els.modelList.append(row);
     });
+  }
+
+  function renderReferenceTabs() {
+    const refs = DEMO_DATA.referenceMaterials;
+    els.refTabs.innerHTML = "";
+    Object.keys(refs).forEach((key, idx) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "ref-tab";
+      button.textContent = refs[key].title;
+      if (idx === 0) state.activeRefKey = key;
+      if (state.activeRefKey === key) button.classList.add("active");
+      button.addEventListener("click", () => {
+        state.activeRefKey = key;
+        renderReferenceTabs();
+        renderReferenceContent();
+      });
+      els.refTabs.append(button);
+    });
+    renderReferenceContent();
+  }
+
+  function renderMarkdownLike(raw) {
+    return raw
+      .split("\n")
+      .map((line) => {
+        if (line.startsWith("# ")) return `<div class="md-h1">${line.slice(2)}</div>`;
+        if (line.startsWith("## ")) return `<div class="md-h2">${line.slice(3)}</div>`;
+        if (line.startsWith("- ")) return `<div class="md-li">• ${line.slice(2)}</div>`;
+        if (!line.trim()) return "<div>&nbsp;</div>";
+        return `<div>${line}</div>`;
+      })
+      .join("");
+  }
+
+  function renderReferenceContent() {
+    const item = DEMO_DATA.referenceMaterials[state.activeRefKey];
+    els.refContent.innerHTML = renderMarkdownLike(item.body);
   }
 
   function renderInitialSetup() {
@@ -96,25 +142,26 @@
     appendOptions(els.productSelect, DEMO_DATA.products, 0);
     appendOptions(els.scenarioSelect, DEMO_DATA.scenarios, 0);
     appendOptions(els.timeSelect, DEMO_DATA.timeLimits.map((m) => `${m} 分钟`), 1);
-    [...els.timeSelect.options].forEach((opt, idx) => {
-      opt.value = String(DEMO_DATA.timeLimits[idx]);
+    [...els.timeSelect.options].forEach((option, idx) => {
+      option.value = String(DEMO_DATA.timeLimits[idx]);
     });
 
-    renderModelOptions();
+    renderModelList();
+    renderReferenceTabs();
     updateCustomerBackground();
   }
 
   function getSelectedModels() {
-    const selectedIds = [...els.modelOptions.querySelectorAll("input:checked")].map((input) => input.value);
-    if (!selectedIds.length) {
-      const first = els.modelOptions.querySelector("input");
+    const selected = [...els.modelList.querySelectorAll("input:checked")].map((input) => input.value);
+    if (!selected.length) {
+      const first = els.modelList.querySelector("input");
       if (first) {
         first.checked = true;
-        first.parentElement.classList.add("selected");
-        selectedIds.push(first.value);
+        first.closest(".model-row").classList.add("selected");
+        selected.push(first.value);
       }
     }
-    return DEMO_DATA.futureModels.filter((m) => selectedIds.includes(m.id));
+    return DEMO_DATA.futureModels.filter((m) => selected.includes(m.id));
   }
 
   function getSelectedContext() {
@@ -129,17 +176,6 @@
     };
   }
 
-  function addChatMessage(role, text) {
-    state.history.push({ role, text, at: new Date().toISOString() });
-
-    const bubble = document.createElement("div");
-    bubble.className = `bubble ${role}`;
-    const meta = role === "customer" ? state.context.role : "你";
-    bubble.innerHTML = `<span class="meta">${meta}</span>${text}`;
-    els.chatLog.append(bubble);
-    els.chatLog.scrollTop = els.chatLog.scrollHeight;
-  }
-
   function renderChatContext() {
     const tags = [
       `客户：${state.context.customer.name}`,
@@ -149,7 +185,6 @@
       `场景：${state.context.scenario}`,
       `时长：${state.context.timeLimit} 分钟`
     ];
-
     els.chatContext.innerHTML = "";
     tags.forEach((tag) => {
       const span = document.createElement("span");
@@ -158,20 +193,26 @@
     });
   }
 
+  function addChatMessage(role, text) {
+    state.history.push({ role, text, at: new Date().toISOString() });
+
+    const bubble = document.createElement("div");
+    bubble.className = `bubble ${role}`;
+    bubble.innerHTML = `<span class="meta">${role === "customer" ? state.context.role : "你"}</span>${text}`;
+    els.chatLog.append(bubble);
+    els.chatLog.scrollTop = els.chatLog.scrollHeight;
+  }
+
   function renderTimer() {
     if (!state.startedAt || !state.context) return;
-
     const elapsedSec = Math.floor((Date.now() - state.startedAt.getTime()) / 1000);
-    const maxSec = state.context.timeLimit * 60;
-    const remain = Math.max(0, maxSec - elapsedSec);
+    const remain = Math.max(0, state.context.timeLimit * 60 - elapsedSec);
 
     const mm = String(Math.floor(remain / 60)).padStart(2, "0");
     const ss = String(remain % 60).padStart(2, "0");
     els.timerBadge.textContent = `${mm}:${ss}`;
 
-    if (remain === 0) {
-      endConversation("时间到了，我们先到这里。建议你下轮把开场价值点再收紧一点。");
-    }
+    if (remain === 0) endConversation("时间到了，这轮先到这里。你可以基于右侧资料再练一轮。");
   }
 
   function startTimer() {
@@ -208,11 +249,11 @@
     state.turnCount += 1;
 
     const analysis = MockAI.analyzeUserMessage(text);
-    const customerReply = MockAI.getCustomerReply(state.turnCount, analysis, state.context);
-    window.setTimeout(() => addChatMessage("customer", customerReply), 280);
+    const reply = MockAI.getCustomerReply(state.turnCount, analysis, state.context);
+    setTimeout(() => addChatMessage("customer", reply), 280);
 
     if (state.turnCount >= 7) {
-      window.setTimeout(() => endConversation("我这边要去下个会了。请把这版话术再打磨一下，我们下轮继续。"), 700);
+      setTimeout(() => endConversation("我这边要去下个会了。你把重点再收敛一下，我们可以继续谈。"), 700);
     }
   }
 
@@ -226,6 +267,7 @@
   }
 
   function renderReview(review) {
+    els.winRate.textContent = `${review.winRate}%`;
     els.outcomeBadge.textContent = `结果：${review.outcome}`;
     els.outcomeBadge.className = "outcome-badge";
     els.outcomeBadge.classList.add(`outcome-${review.outcomeClass.toLowerCase()}`);
@@ -240,9 +282,9 @@
     els.nextAction.textContent = review.coaching.nextAction;
   }
 
-  function endConversation(optionalFinalMessage) {
+  function endConversation(optionalFinal) {
     if (state.step !== "chat") return;
-    if (optionalFinalMessage) addChatMessage("customer", optionalFinalMessage);
+    if (optionalFinal) addChatMessage("customer", optionalFinal);
 
     stopTimer();
     const review = MockAI.generateReview(state.history, state.context);
@@ -261,14 +303,12 @@
 
   function bindEvents() {
     els.customerSelect.addEventListener("change", updateCustomerBackground);
-
     document.getElementById("startBtn").addEventListener("click", startConversation);
     document.getElementById("sendBtn").addEventListener("click", submitUserMessage);
-    document.getElementById("chatInput").addEventListener("keydown", (event) => {
+    els.chatInput.addEventListener("keydown", (event) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "Enter") submitUserMessage();
     });
     document.getElementById("endChatBtn").addEventListener("click", () => endConversation());
-
     document.getElementById("retryBtn").addEventListener("click", startConversation);
     document.getElementById("newRunBtn").addEventListener("click", resetToStart);
     els.restartTopBtn.addEventListener("click", resetToStart);

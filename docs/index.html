@@ -18,7 +18,7 @@
 
       <section id="startView" class="view active card">
         <h2>开始前快速设置</h2>
-        <p class="subtle">会前 1 分钟，先确认客户、产品和沟通目标。</p>
+        <p class="subtle">会前 1 分钟，快速定义“和谁聊、卖什么、怎么聊”。</p>
 
         <div class="grid-two">
           <label class="field">
@@ -33,7 +33,14 @@
 
         <article class="field">
           <span>未来主推车型（可多选）</span>
-          <div id="modelOptions" class="model-grid"></div>
+          <div class="model-list-head">
+            <span>选择</span>
+            <span>车型名称</span>
+            <span>车型类型</span>
+            <span>能源类型</span>
+            <span>使用场景</span>
+          </div>
+          <div id="modelList" class="model-list"></div>
         </article>
 
         <div class="grid-three">
@@ -70,19 +77,39 @@
           <div class="timer" id="timerBadge">00:00</div>
         </div>
 
-        <div id="chatLog" class="chat-log" aria-live="polite"></div>
+        <div class="workspace-grid">
+          <section class="chat-column">
+            <div id="chatLog" class="chat-log" aria-live="polite"></div>
+            <div class="composer">
+              <textarea id="chatInput" rows="3" placeholder="输入你想对客户说的话...（Ctrl/Cmd + Enter 发送）"></textarea>
+              <div class="actions-row">
+                <button id="endChatBtn" class="btn ghost">结束对话</button>
+                <button id="sendBtn" class="btn primary">发送</button>
+              </div>
+            </div>
+          </section>
 
-        <div class="composer">
-          <textarea id="chatInput" rows="3" placeholder="输入你想对客户说的话...（Ctrl/Cmd + Enter 发送）"></textarea>
-          <div class="actions-row">
-            <button id="endChatBtn" class="btn ghost">结束对话</button>
-            <button id="sendBtn" class="btn primary">发送</button>
-          </div>
+          <aside class="ref-panel">
+            <h3>参考资料</h3>
+            <div id="refTabs" class="ref-tabs"></div>
+            <article id="refContent" class="ref-content"></article>
+            <div class="pdf-placeholder">
+              <strong>PDF 预览占位（预留）</strong>
+              <p>后续可在这里嵌入产品白皮书/案例 PDF 预览。</p>
+            </div>
+          </aside>
         </div>
       </section>
 
       <section id="reviewView" class="view card">
-        <h2>复盘建议</h2>
+        <div class="review-top">
+          <h2>复盘建议</h2>
+          <div class="winrate-box">
+            <p>模拟赢单率</p>
+            <strong id="winRate"></strong>
+          </div>
+        </div>
+
         <div id="outcomeBadge" class="outcome-badge"></div>
 
         <div class="review-grid">
