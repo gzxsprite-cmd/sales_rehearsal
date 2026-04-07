@@ -1,62 +1,71 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sales Rehearsal AI Demo</title>
+    <title>销售对练演示</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Sales Rehearsal AI</p>
-          <h1>V0.1 Pages Demo</h1>
+          <p class="eyebrow">销售对练 AI</p>
+          <h1>销售对练演示版</h1>
         </div>
-        <button id="restartTopBtn" class="btn ghost hidden">Start New Rehearsal</button>
+        <button id="restartTopBtn" class="btn ghost hidden">新建对练</button>
       </header>
 
-      <section id="homeView" class="view active card">
-        <h2>Rehearse the real customer conversation before the real meeting.</h2>
-        <p>
-          Practice a first VMS introduction with a simulated Project Director, expose
-          weak points, and get practical coaching for the next try.
-        </p>
-        <div class="quick-note">Average run time: 2 minutes</div>
-        <button id="startBtn" class="btn primary">Start Rehearsal</button>
-      </section>
+      <section id="startView" class="view active card">
+        <h2>开始前快速设置</h2>
+        <p class="subtle">会前 1 分钟，先确认客户、产品和沟通目标。</p>
 
-      <section id="setupView" class="view card">
-        <h2>Setup</h2>
-        <p class="subtle">Lock context quickly and begin rehearsal.</p>
         <div class="grid-two">
           <label class="field">
-            <span>Customer</span>
+            <span>客户</span>
             <select id="customerSelect"></select>
           </label>
+          <article class="field background-box">
+            <span>客户背景</span>
+            <p id="customerBackground" class="background-text"></p>
+          </article>
+        </div>
+
+        <article class="field">
+          <span>未来主推车型（可多选）</span>
+          <div id="modelOptions" class="model-grid"></div>
+        </article>
+
+        <div class="grid-three">
           <label class="field">
-            <span>Time Limit</span>
-            <select id="timeSelect"></select>
+            <span>沟通对象角色</span>
+            <select id="roleSelect"></select>
+          </label>
+          <label class="field">
+            <span>主推产品</span>
+            <select id="productSelect"></select>
+          </label>
+          <label class="field">
+            <span>沟通场景</span>
+            <select id="scenarioSelect"></select>
           </label>
         </div>
 
-        <div class="context-strip">
-          <span><strong>Product:</strong> VMS</span>
-          <span><strong>Role:</strong> Project Director</span>
-          <span><strong>Scenario:</strong> First Introduction</span>
-        </div>
+        <label class="field time-field">
+          <span>时长限制</span>
+          <select id="timeSelect"></select>
+        </label>
 
         <div class="actions-row">
-          <button id="backHomeBtn" class="btn ghost">Back</button>
-          <button id="beginChatBtn" class="btn primary">Begin Chat</button>
+          <button id="startBtn" class="btn primary">开始对练</button>
         </div>
       </section>
 
       <section id="chatView" class="view card">
         <div class="chat-top">
           <div>
-            <h2>Chat Rehearsal</h2>
-            <p id="chatContext" class="subtle"></p>
+            <h2>模拟对话</h2>
+            <div id="chatContext" class="context-strip"></div>
           </div>
           <div class="timer" id="timerBadge">00:00</div>
         </div>
@@ -64,45 +73,45 @@
         <div id="chatLog" class="chat-log" aria-live="polite"></div>
 
         <div class="composer">
-          <textarea id="chatInput" rows="3" placeholder="Type your response to the customer..."></textarea>
+          <textarea id="chatInput" rows="3" placeholder="输入你想对客户说的话...（Ctrl/Cmd + Enter 发送）"></textarea>
           <div class="actions-row">
-            <button id="endChatBtn" class="btn ghost">End Conversation</button>
-            <button id="sendBtn" class="btn primary">Send</button>
+            <button id="endChatBtn" class="btn ghost">结束对话</button>
+            <button id="sendBtn" class="btn primary">发送</button>
           </div>
         </div>
       </section>
 
       <section id="reviewView" class="view card">
-        <h2>Review</h2>
+        <h2>复盘建议</h2>
         <div id="outcomeBadge" class="outcome-badge"></div>
 
         <div class="review-grid">
           <article class="review-block">
-            <h3>Good Points</h3>
+            <h3>做得好的地方</h3>
             <ul id="goodPoints"></ul>
           </article>
           <article class="review-block">
-            <h3>Unclear Points</h3>
+            <h3>没讲清楚的地方</h3>
             <ul id="unclearPoints"></ul>
           </article>
           <article class="review-block">
-            <h3>Risk Points</h3>
+            <h3>客户可能担心的点</h3>
             <ul id="riskPoints"></ul>
           </article>
         </div>
 
         <article class="review-block coaching">
-          <h3>Knowledge Coaching</h3>
+          <h3>建议补充的知识</h3>
           <p id="missingType"></p>
           <p id="knowledgeToAdd"></p>
-          <p><strong>Suggested phrasing:</strong></p>
+          <p><strong>下轮可直接这样说：</strong></p>
           <blockquote id="suggestedPhrase"></blockquote>
           <p id="nextAction"></p>
         </article>
 
         <div class="actions-row">
-          <button id="retryBtn" class="btn primary">Retry Same Scenario</button>
-          <button id="newRunBtn" class="btn ghost">Start New Rehearsal</button>
+          <button id="retryBtn" class="btn primary">再练一轮</button>
+          <button id="newRunBtn" class="btn ghost">新建对练</button>
         </div>
       </section>
     </main>
