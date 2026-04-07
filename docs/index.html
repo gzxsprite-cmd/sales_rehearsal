@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales Rehearsal AI Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Sales Rehearsal AI</p>
+          <h1>V0.1 Pages Demo</h1>
+        </div>
+        <button id="restartTopBtn" class="btn ghost hidden">Start New Rehearsal</button>
+      </header>
+
+      <section id="homeView" class="view active card">
+        <h2>Rehearse the real customer conversation before the real meeting.</h2>
+        <p>
+          Practice a first VMS introduction with a simulated Project Director, expose
+          weak points, and get practical coaching for the next try.
+        </p>
+        <div class="quick-note">Average run time: 2 minutes</div>
+        <button id="startBtn" class="btn primary">Start Rehearsal</button>
+      </section>
+
+      <section id="setupView" class="view card">
+        <h2>Setup</h2>
+        <p class="subtle">Lock context quickly and begin rehearsal.</p>
+        <div class="grid-two">
+          <label class="field">
+            <span>Customer</span>
+            <select id="customerSelect"></select>
+          </label>
+          <label class="field">
+            <span>Time Limit</span>
+            <select id="timeSelect"></select>
+          </label>
+        </div>
+
+        <div class="context-strip">
+          <span><strong>Product:</strong> VMS</span>
+          <span><strong>Role:</strong> Project Director</span>
+          <span><strong>Scenario:</strong> First Introduction</span>
+        </div>
+
+        <div class="actions-row">
+          <button id="backHomeBtn" class="btn ghost">Back</button>
+          <button id="beginChatBtn" class="btn primary">Begin Chat</button>
+        </div>
+      </section>
+
+      <section id="chatView" class="view card">
+        <div class="chat-top">
+          <div>
+            <h2>Chat Rehearsal</h2>
+            <p id="chatContext" class="subtle"></p>
+          </div>
+          <div class="timer" id="timerBadge">00:00</div>
+        </div>
+
+        <div id="chatLog" class="chat-log" aria-live="polite"></div>
+
+        <div class="composer">
+          <textarea id="chatInput" rows="3" placeholder="Type your response to the customer..."></textarea>
+          <div class="actions-row">
+            <button id="endChatBtn" class="btn ghost">End Conversation</button>
+            <button id="sendBtn" class="btn primary">Send</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="reviewView" class="view card">
+        <h2>Review</h2>
+        <div id="outcomeBadge" class="outcome-badge"></div>
+
+        <div class="review-grid">
+          <article class="review-block">
+            <h3>Good Points</h3>
+            <ul id="goodPoints"></ul>
+          </article>
+          <article class="review-block">
+            <h3>Unclear Points</h3>
+            <ul id="unclearPoints"></ul>
+          </article>
+          <article class="review-block">
+            <h3>Risk Points</h3>
+            <ul id="riskPoints"></ul>
+          </article>
+        </div>
+
+        <article class="review-block coaching">
+          <h3>Knowledge Coaching</h3>
+          <p id="missingType"></p>
+          <p id="knowledgeToAdd"></p>
+          <p><strong>Suggested phrasing:</strong></p>
+          <blockquote id="suggestedPhrase"></blockquote>
+          <p id="nextAction"></p>
+        </article>
+
+        <div class="actions-row">
+          <button id="retryBtn" class="btn primary">Retry Same Scenario</button>
+          <button id="newRunBtn" class="btn ghost">Start New Rehearsal</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="mock-ai.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
